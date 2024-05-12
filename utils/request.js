@@ -1,3 +1,5 @@
+import queryString from "query-string"
+
 /**
  * @description Returns the request body appropriate to its Content-Type header
  * @author Francis Rubio
@@ -15,13 +17,7 @@ export async function getContent(request) {
 	} else if (contentType.includes('text/html')) {
 		return request.text()
 	} else if (contentType.includes('form')) {
-		const form = await request.formData()
-		const body = {}
-		for (const entry of form.entries()) {
-			body[entry[0]] = entry[1]
-		}
-
-		return body
+		return queryString.parse(await request.text(), { arrayFormat: 'bracket' })
 	} else {
 		return await request.body
 	}

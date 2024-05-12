@@ -1,5 +1,6 @@
 import { accessTokenIsProvided, requestIsAuthenticated, getTokenDetails, operationIsPermitted } from '../utils/auth'
 import { getContent } from '../utils/request';
+import { parseItem } from '../utils/content';
 
 export default {
 	async fetch(request, env, ctx) {
@@ -24,6 +25,6 @@ export default {
 			return new Response(null, { status: 403 })
 		}
 
-		return new Response(null, { status: 201, headers: { Location: 'https://francisrub.io/' } });
+		return new Response(parseItem(content), { status: 201, headers: { Location: 'https://francisrub.io/' } });
 	},
 };
