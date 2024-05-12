@@ -20,7 +20,7 @@ export default {
 			return new Response('No `h` parameter supplied.', { status: 400 })
 		}
 
-		if (!(await operationIsPermitted(request, env))) {
+		if (!(await operationIsPermitted(content, token))) {
 			return new Response(null, { status: 403 })
 		}
 

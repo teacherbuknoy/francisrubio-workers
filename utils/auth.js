@@ -30,7 +30,7 @@ function clientIsAccepted(clientId) {
  * @param {string} authorization The authorization header
  * @returns {IndieToken}
  */
-async function getTokenDetails(authorization) {
+export async function getTokenDetails(authorization) {
 	const headers = {
 		Authorization: authorization,
 		Accept: 'application/json'
@@ -39,20 +39,40 @@ async function getTokenDetails(authorization) {
 	return await response.json()
 }
 
-export async function requestIsAuthenticated(authorization, env) {
-	const token = await getTokenDetails(authorization)
-
+/**
+ * @description Checks if the token is valid
+ * @author Francis Rubio
+ * @export
+ * @param {IndieToken} token
+ * @param {*} env
+ * @returns {boolean}
+ */
+export async function requestIsAuthenticated(token, env) {
 	if (token.error) {
 		return false
 	}
 
-	console.log(token)
-
 	const clientIsRecognized = clientIsAccepted(token.client_id)
 	const meIsRecognized = domainsAreSame(token.me, env.ME_DOMAIN)
 
-	console.log({ clientIsRecognized, meIsRecognized, me: env.ME_DOMAIN, token_me: token.me, token })
 	return clientIsRecognized && meIsRecognized
+}
+
+/**
+ * @description Checks if the token is permitted to execute the request
+ * @author Francis Rubio
+ * @export
+ * @param {Request} request
+ * @param {IndieToken} token
+ * @returns {boolean}
+ */
+export async function operationIsPermitted(content, token) {
+	if (content.h === 'entry') {
+		const scope = token.scope.split(' ')
+		return scope.includes('create')
+	}
+
+	return false
 }
 
 /**
