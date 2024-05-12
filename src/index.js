@@ -1,6 +1,6 @@
 import { accessTokenIsProvided, requestIsAuthenticated, getTokenDetails, operationIsPermitted } from '../utils/auth'
 import { getContent } from '../utils/request';
-import { parseItem } from '../utils/content';
+import { createGithubWriteRequest, createPostFile, parseItem } from '../utils/content';
 
 export default {
 	async fetch(request, env, ctx) {
@@ -17,14 +17,21 @@ export default {
 		}
 
 		const hCardTypeExists = content.h != null
+			|| content.type === 'h-entry'
+			|| content.type.includes('h-entry')
 		if (!hCardTypeExists) {
+			console.log(content)
 			return new Response('No `h` parameter supplied.', { status: 400 })
 		}
 
-		if (!(await operationIsPermitted(content, token))) {
-			return new Response(null, { status: 403 })
+		if (!operationIsPermitted(content, token)) {
+			console.log({ token, content })
+			return new Response('Insufficient permissions: `create`.', { status: 403 })
 		}
 
-		return new Response(parseItem(content), { status: 201, headers: { Location: 'https://francisrub.io/' } });
+		const post = parseItem(content)
+		const postfile = createPostFile(post)
+		ctx.waitUntil(createGithubWriteRequest(postfile, post, env))
+		return new Response(createPostFile(post), { status: 201, headers: { Location: 'https://francisrub.io/notes/' } });
 	},
 };

@@ -66,8 +66,8 @@ export async function requestIsAuthenticated(token, env) {
  * @param {IndieToken} token
  * @returns {boolean}
  */
-export async function operationIsPermitted(content, token) {
-	if (content.h === 'entry') {
+export function operationIsPermitted(content, token) {
+	if (content.h === 'entry' || content.type === 'h-entry' || content.type.includes('h-entry')) {
 		const scope = token.scope.split(' ')
 		return scope.includes('create')
 	}
