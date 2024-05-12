@@ -24,6 +24,6 @@ export default {
 			return new Response(null, { status: 403 })
 		}
 
-		return new Response(null, { status: 202 });
+		return new Response(null, { status: 201 });
 	},
 };
