@@ -1,5 +1,6 @@
 export function parseItem(item) {
 	console.log(item)
+	return JSON.stringify(item)
 }
 
 /**
